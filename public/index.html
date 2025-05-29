@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Cloud File Upload</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="upload-container">
+        <h2>Multi-Cloud File Upload</h2>
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">Upload</button>
+        <p id="status"></p>
+    </div>
+
+    <div id="cloud-indicator" class="cloud-indicator"></div>
+
+    <script>
+
+        fetch('/api/cloud')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('cloud-indicator').textContent = "Running on " + data.cloud.toUpperCase();
+            })
+            .catch(err => {
+                document.getElementById('cloud-indicator').textContent = "Cloud unknown";
+            });
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) return alert('Select a file first');
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            document.getElementById('status').textContent = "Uploading to AWS, Azure, and GCP...";
+
+            try {
+                const response = await fetch("http://localhost:5000/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('status').innerHTML =
+                        `✅ Uploaded successfully!<br>
+                        AWS: <a href="${result.urls.aws}" target="_blank">${result.urls.aws}</a><br>
+                        Azure: <a href="${result.urls.azure}" target="_blank">${result.urls.azure}</a><br>
+                        GCP: <a href="${result.urls.gcp}" target="_blank">${result.urls.gcp}</a>`;
+                } else {
+                    document.getElementById('status').textContent = "❌ Upload failed: " + result.error;
+                }
+            } catch (error) {
+                document.getElementById('status').textContent = "❌ Error uploading file";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

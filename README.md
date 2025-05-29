@@ -32,11 +32,6 @@ The goal of this project was to build a resilient infrastructure that can handle
 - Each instance uses a static IP.
 - These IPs are associated with Route 53's DNS entries under a single domain name.
 
-### 4. High Traffic Testing
-- Used the **`hey`** tool to simulate **100,000 HTTP requests**.
-- Successfully caused the primary site to become unresponsive.
-- Verified that traffic seamlessly shifted to the secondary site without a change in the domain name.
-
 ## Steps to Recreate
 
 1. **Host identical websites** on AWS EC2 and Azure VM.
@@ -44,14 +39,12 @@ The goal of this project was to build a resilient infrastructure that can handle
 3. Register a domain and configure **Route 53**:
    - Set **A records** and **NS records** with failover routing (Primary & Secondary).
    - Create **Health Checks** for the primary site.
-4. Install and use `hey` to test request load.
 
 ## Technologies Used
 
 - AWS Route 53
 - AWS EC2
 - Microsoft Azure Virtual Machines
-- hey (Load testing tool)
 - Static IP Allocation
 - Domain DNS Configuration
 - Health Checks
